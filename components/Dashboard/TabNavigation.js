@@ -32,7 +32,7 @@ export default function TabNavigation({ onTabChange, defaultTab = 'blood-sugar' 
           aria-current={activeTab === tab.id ? 'page' : undefined}
         >
           <span className="text-2xl block mb-1">{tab.icon}</span>
-          <span className="text-sm">{tab.label}</span>
+          <span className="text-base">{tab.label}</span>
         </button>
       ))}
     </nav>
