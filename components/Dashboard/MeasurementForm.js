@@ -106,6 +106,11 @@ export default function MeasurementForm({ patient, onSave, onCancel }) {
 
   const year = now.getFullYear();
 
+  const handleMonthChange = (newMonth) => {
+    setMonth(newMonth);
+    setDay((currentDay) => Math.min(currentDay, DAYS_IN_MONTH(newMonth, year)));
+  };
+
   const goNext = () => {
     setError('');
 
@@ -205,7 +210,7 @@ export default function MeasurementForm({ patient, onSave, onCancel }) {
             <p className="text-lg text-gray-600">تاريخ ووقت القراءة</p>
             <div className="flex gap-4">
               <Spinner label="اليوم" value={day} onChange={setDay} min={1} max={DAYS_IN_MONTH(month, year)} />
-              <Spinner label="الشهر" value={month} onChange={setMonth} min={1} max={12} />
+              <Spinner label="الشهر" value={month} onChange={handleMonthChange} min={1} max={12} />
               {settings.timeInputMethod === 'arrows' && (
                 <>
                   <Spinner label="الساعة" value={hour} onChange={setHour} min={0} max={23} />
