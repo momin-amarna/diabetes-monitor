@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { settingsStorage } from '../../lib/storage';
 import { createSettings } from '../../lib/models';
+import { validateMeasurement } from '../../lib/validation';
 
 const DAYS_IN_MONTH = (month, year) => new Date(year, month, 0).getDate();
 
@@ -85,7 +86,7 @@ function Spinner({ label, value, onChange, min, max }) {
   );
 }
 
-export default function MeasurementForm({ patient, onCancel }) {
+export default function MeasurementForm({ patient, onSave, onCancel }) {
   const settings = settingsStorage.get() || createSettings();
 
   const now = new Date();
@@ -101,8 +102,70 @@ export default function MeasurementForm({ patient, onCancel }) {
   );
   const [wantsNotes, setWantsNotes] = useState(null);
   const [notes, setNotes] = useState('');
+  const [error, setError] = useState('');
 
   const year = now.getFullYear();
+
+  const goNext = () => {
+    setError('');
+
+    if (step === 1) {
+      const { valid, errors } = validateMeasurement({ reading, fastingHours: '0' });
+      if (!valid && errors.reading) {
+        setError(errors.reading);
+        return;
+      }
+      setStep(2);
+      return;
+    }
+
+    if (step === 2) {
+      const { valid, errors } = validateMeasurement({ reading, fastingHours });
+      if (!valid && errors.fastingHours) {
+        setError(errors.fastingHours);
+        return;
+      }
+      setStep(3);
+      return;
+    }
+
+    if (step === 3) {
+      setStep(settings.showNotes ? 4 : 5);
+      return;
+    }
+
+    if (step === 4) {
+      setStep(5);
+    }
+  };
+
+  const goBack = () => {
+    setError('');
+    if (step === 5 && !settings.showNotes) {
+      setStep(3);
+      return;
+    }
+    setStep(Math.max(1, step - 1));
+  };
+
+  const getTimestamp = () => {
+    if (settings.timeInputMethod === 'manual') {
+      const [h, m] = manualTime.split(':').map(Number);
+      return new Date(year, month - 1, day, h || 0, m || 0).getTime();
+    }
+    return new Date(year, month - 1, day, hour, minute).getTime();
+  };
+
+  const handleConfirm = () => {
+    const measurement = {
+      patientId: patient.id,
+      reading: Number(reading),
+      fastingHours: Number(fastingHours),
+      timestamp: getTimestamp(),
+      notes: wantsNotes ? notes.trim() : '',
+    };
+    onSave(measurement);
+  };
 
   return (
     <div className="fixed inset-0 bg-white z-50 flex flex-col">
@@ -203,16 +266,67 @@ export default function MeasurementForm({ patient, onCancel }) {
             )}
           </>
         )}
+
+        {step === 5 && (
+          <div className="w-full max-w-sm flex flex-col gap-3">
+            <h3 className="text-subheading font-bold text-gray-900 text-center mb-2">ملخص القراءة</h3>
+            <div className="flex justify-between text-lg">
+              <span className="text-gray-600">القراءة</span>
+              <span className="font-bold">{reading} mg/dL</span>
+            </div>
+            <div className="flex justify-between text-lg">
+              <span className="text-gray-600">ساعات الصيام</span>
+              <span className="font-bold">{fastingHours}</span>
+            </div>
+            <div className="flex justify-between text-lg">
+              <span className="text-gray-600">التاريخ والوقت</span>
+              <span className="font-bold">
+                {new Date(getTimestamp()).toLocaleString('ar-EG')}
+              </span>
+            </div>
+            {wantsNotes && notes && (
+              <div className="text-lg">
+                <span className="text-gray-600 block mb-1">ملاحظات</span>
+                <p className="font-medium">{notes}</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {error && (
+          <p className="text-danger text-base" role="alert">
+            {error}
+          </p>
+        )}
       </main>
 
       <footer className="flex gap-3 px-6 py-4 border-t border-gray-200">
-        <button
-          onClick={() => setStep((s) => s + 1)}
-          className="flex-1 min-h-touch bg-green-600 hover:bg-green-700 text-white rounded-lg
-            text-lg font-medium transition-colors duration-200"
-        >
-          التالي
-        </button>
+        {step > 1 && (
+          <button
+            onClick={goBack}
+            className="flex-1 min-h-touch border-2 border-gray-300 rounded-lg text-lg font-medium
+              text-gray-700 hover:bg-gray-50"
+          >
+            رجوع
+          </button>
+        )}
+        {step < 5 ? (
+          <button
+            onClick={goNext}
+            className="flex-1 min-h-touch bg-green-600 hover:bg-green-700 text-white rounded-lg
+              text-lg font-medium transition-colors duration-200"
+          >
+            التالي
+          </button>
+        ) : (
+          <button
+            onClick={handleConfirm}
+            className="flex-1 min-h-touch bg-green-600 hover:bg-green-700 text-white rounded-lg
+              text-lg font-medium transition-colors duration-200"
+          >
+            تأكيد
+          </button>
+        )}
       </footer>
     </div>
   );
