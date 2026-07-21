@@ -1,4 +1,8 @@
 import { useState } from 'react';
+import { settingsStorage } from '../../lib/storage';
+import { createSettings } from '../../lib/models';
+
+const DAYS_IN_MONTH = (month, year) => new Date(year, month, 0).getDate();
 
 function NumberKeypad({ value, onChange, maxLength = 3 }) {
   const press = (digit) => {
@@ -49,10 +53,54 @@ function NumberKeypad({ value, onChange, maxLength = 3 }) {
   );
 }
 
+function Spinner({ label, value, onChange, min, max }) {
+  const step = (delta) => {
+    let next = value + delta;
+    if (next > max) next = min;
+    if (next < min) next = max;
+    onChange(next);
+  };
+
+  return (
+    <div className="flex flex-col items-center gap-1">
+      <span className="text-base text-gray-600">{label}</span>
+      <button
+        type="button"
+        onClick={() => step(1)}
+        className="min-h-touch min-w-touch bg-gray-100 rounded-lg text-xl hover:bg-gray-200"
+      >
+        ▲
+      </button>
+      <span className="text-2xl font-bold w-12 text-center">
+        {String(value).padStart(2, '0')}
+      </span>
+      <button
+        type="button"
+        onClick={() => step(-1)}
+        className="min-h-touch min-w-touch bg-gray-100 rounded-lg text-xl hover:bg-gray-200"
+      >
+        ▼
+      </button>
+    </div>
+  );
+}
+
 export default function MeasurementForm({ patient, onCancel }) {
+  const settings = settingsStorage.get() || createSettings();
+
+  const now = new Date();
   const [step, setStep] = useState(1);
   const [reading, setReading] = useState('');
   const [fastingHours, setFastingHours] = useState('');
+  const [day, setDay] = useState(now.getDate());
+  const [month, setMonth] = useState(now.getMonth() + 1);
+  const [hour, setHour] = useState(now.getHours());
+  const [minute, setMinute] = useState(now.getMinutes());
+  const [manualTime, setManualTime] = useState(
+    `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`
+  );
+
+  const year = now.getFullYear();
 
   return (
     <div className="fixed inset-0 bg-white z-50 flex flex-col">
@@ -84,6 +132,30 @@ export default function MeasurementForm({ patient, onCancel }) {
             <p className="text-lg text-gray-600">كم عدد ساعات الصيام؟</p>
             <p className="text-6xl font-bold text-gray-900 min-h-[4rem]">{fastingHours || '—'}</p>
             <NumberKeypad value={fastingHours} onChange={setFastingHours} maxLength={2} />
+          </>
+        )}
+
+        {step === 3 && (
+          <>
+            <p className="text-lg text-gray-600">تاريخ ووقت القراءة</p>
+            <div className="flex gap-4">
+              <Spinner label="اليوم" value={day} onChange={setDay} min={1} max={DAYS_IN_MONTH(month, year)} />
+              <Spinner label="الشهر" value={month} onChange={setMonth} min={1} max={12} />
+              {settings.timeInputMethod === 'arrows' && (
+                <>
+                  <Spinner label="الساعة" value={hour} onChange={setHour} min={0} max={23} />
+                  <Spinner label="الدقيقة" value={minute} onChange={setMinute} min={0} max={59} />
+                </>
+              )}
+            </div>
+            {settings.timeInputMethod === 'manual' && (
+              <input
+                type="time"
+                value={manualTime}
+                onChange={(e) => setManualTime(e.target.value)}
+                className="min-h-touch px-4 py-2 text-2xl border border-gray-300 rounded-lg text-center"
+              />
+            )}
           </>
         )}
       </main>
