@@ -99,6 +99,8 @@ export default function MeasurementForm({ patient, onCancel }) {
   const [manualTime, setManualTime] = useState(
     `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`
   );
+  const [wantsNotes, setWantsNotes] = useState(null);
+  const [notes, setNotes] = useState('');
 
   const year = now.getFullYear();
 
@@ -154,6 +156,49 @@ export default function MeasurementForm({ patient, onCancel }) {
                 value={manualTime}
                 onChange={(e) => setManualTime(e.target.value)}
                 className="min-h-touch px-4 py-2 text-2xl border border-gray-300 rounded-lg text-center"
+              />
+            )}
+          </>
+        )}
+
+        {step === 4 && (
+          <>
+            <p className="text-lg text-gray-600">هل تريد إضافة ملاحظات؟</p>
+            <div className="flex gap-4">
+              <button
+                type="button"
+                onClick={() => setWantsNotes(true)}
+                className={`min-h-touch px-8 rounded-lg text-lg font-medium border-2 ${
+                  wantsNotes === true
+                    ? 'border-green-600 bg-green-50 text-green-700'
+                    : 'border-gray-300 text-gray-700'
+                }`}
+              >
+                نعم
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setWantsNotes(false);
+                  setNotes('');
+                }}
+                className={`min-h-touch px-8 rounded-lg text-lg font-medium border-2 ${
+                  wantsNotes === false
+                    ? 'border-green-600 bg-green-50 text-green-700'
+                    : 'border-gray-300 text-gray-700'
+                }`}
+              >
+                لا
+              </button>
+            </div>
+            {wantsNotes && (
+              <textarea
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="اكتب ملاحظاتك هنا..."
+                rows={4}
+                className="w-full max-w-sm px-4 py-3 text-lg border border-gray-300 rounded-lg
+                  focus:outline-none focus:ring-2 focus:ring-green-600"
               />
             )}
           </>
