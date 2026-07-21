@@ -3,13 +3,17 @@ import { formatTimeAgo } from '../../lib/utils';
 export default function PatientCard({ patient, lastMeasurement, onTap, onNewMeasurement }) {
   return (
     <div
-      onClick={() => onTap && onTap(patient)}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => {
-        if ((e.key === 'Enter' || e.key === ' ') && onTap) onTap(patient);
-      }}
-      className="rounded-2xl p-5 text-white shadow-md cursor-pointer select-none"
+      onClick={onTap ? () => onTap(patient) : undefined}
+      role={onTap ? 'button' : undefined}
+      tabIndex={onTap ? 0 : undefined}
+      onKeyDown={
+        onTap
+          ? (e) => {
+              if (e.key === 'Enter' || e.key === ' ') onTap(patient);
+            }
+          : undefined
+      }
+      className={`rounded-2xl p-5 text-white shadow-md select-none ${onTap ? 'cursor-pointer' : ''}`}
       style={{
         background: `linear-gradient(135deg, ${patient.color}, ${patient.color}cc)`,
       }}
