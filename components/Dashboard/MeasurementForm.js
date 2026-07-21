@@ -52,6 +52,7 @@ function NumberKeypad({ value, onChange, maxLength = 3 }) {
 export default function MeasurementForm({ patient, onCancel }) {
   const [step, setStep] = useState(1);
   const [reading, setReading] = useState('');
+  const [fastingHours, setFastingHours] = useState('');
 
   return (
     <div className="fixed inset-0 bg-white z-50 flex flex-col">
@@ -75,6 +76,14 @@ export default function MeasurementForm({ patient, onCancel }) {
             <p className="text-lg text-gray-600">أدخل قراءة السكر (mg/dL)</p>
             <p className="text-6xl font-bold text-gray-900 min-h-[4rem]">{reading || '—'}</p>
             <NumberKeypad value={reading} onChange={setReading} maxLength={3} />
+          </>
+        )}
+
+        {step === 2 && (
+          <>
+            <p className="text-lg text-gray-600">كم عدد ساعات الصيام؟</p>
+            <p className="text-6xl font-bold text-gray-900 min-h-[4rem]">{fastingHours || '—'}</p>
+            <NumberKeypad value={fastingHours} onChange={setFastingHours} maxLength={2} />
           </>
         )}
       </main>
