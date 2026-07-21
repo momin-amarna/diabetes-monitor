@@ -17,6 +17,7 @@ build/
 # Testing
 coverage/
 .nyc_output/
+.playwright-mcp/
 
 # IDE
 .vscode/
