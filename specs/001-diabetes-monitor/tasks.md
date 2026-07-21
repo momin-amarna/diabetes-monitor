@@ -104,13 +104,13 @@ Single Next.js project. All paths relative to repository root (`pages/`, `compon
 
 ### Implementation for User Story 3
 
-- [ ] T030 [P] [US3] Create `pages/api/patients/add.js`, `edit.js`, `delete.js`, `list.js`
-- [ ] T031 [P] [US3] Build `components/PatientManagement/ColorPicker.js` (8 preset colors, selected state)
-- [ ] T032 [US3] Build `components/PatientManagement/AddEditPatient.js` (name input, emoji grid picker, ColorPicker, save/cancel)
-- [ ] T033 [US3] Build `components/PatientManagement/PatientList.js` (list of patients with edit/delete icons)
-- [ ] T034 [US3] Wire "+ Add Patient" button on home screen to open `AddEditPatient`
-- [ ] T035 [US3] Implement soft-delete (mark patient inactive, keep historical data) with confirmation dialog
-- [ ] T036 [US3] Update home screen to render dynamically from all active patients (replace hardcoded Father/Mother assumption)
+- [x] T030 [P] [US3] Create `pages/api/patients/add.js`, `edit.js`, `delete.js`, `list.js`
+- [x] T031 [P] [US3] Build `components/PatientManagement/ColorPicker.js` (8 preset colors, selected state)
+- [x] T032 [US3] Build `components/PatientManagement/AddEditPatient.js` (name input, emoji grid picker, ColorPicker, save/cancel)
+- [x] T033 [US3] Build `components/PatientManagement/PatientList.js` (list of patients with edit/delete icons)
+- [x] T034 [US3] Wire "+ Add Patient" button on home screen to open `AddEditPatient`
+- [x] T035 [US3] Implement soft-delete (mark patient inactive, keep historical data) with confirmation dialog
+- [x] T036 [US3] Update home screen to render dynamically from all active patients (replace hardcoded Father/Mother assumption)
 
 **Checkpoint**: Patient management fully functional alongside US1 and US2
 
