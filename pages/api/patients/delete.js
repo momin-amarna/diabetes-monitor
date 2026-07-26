@@ -1,3 +1,5 @@
+import { isSheetsConfigured } from '../../../lib/sheets-api';
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', ['POST']);
@@ -11,8 +13,9 @@ export default async function handler(req, res) {
   }
 
   // Soft-delete happens client-side (patientStorage.delete marks inactive).
-  // This route is a no-op sync stub until Sheets OAuth is configured.
-  const synced = false;
+  // See add.js: `synced` reports whether Sheets appears configured, not
+  // whether a real write happened — no OAuth write exists yet either way.
+  const synced = isSheetsConfigured();
 
   return res.status(200).json({ success: true, synced });
 }
