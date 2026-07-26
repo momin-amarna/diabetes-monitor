@@ -96,10 +96,16 @@ export default function App() {
     const editingPatient = patientOverlay?.mode === 'edit' ? patientOverlay.patient : null;
 
     const patient = editingPatient
-      ? { ...editingPatient, name: data.name, emoji: data.emoji, color: data.color }
+      ? patientStorage.update(editingPatient.id, {
+          name: data.name,
+          emoji: data.emoji,
+          color: data.color,
+        })
       : createPatient(data.name, data.emoji, data.color);
 
-    patientStorage.save(patient);
+    if (!editingPatient) {
+      patientStorage.save(patient);
+    }
     setPatients(patientStorage.getActive());
     closePatientForm();
 
