@@ -4,10 +4,11 @@ import PatientCard from '../components/Dashboard/PatientCard';
 import EmptyState from '../components/Dashboard/EmptyState';
 import TabNavigation from '../components/Dashboard/TabNavigation';
 import MeasurementForm from '../components/Dashboard/MeasurementForm';
+import WeightForm from '../components/Dashboard/WeightForm';
 import PatientList from '../components/PatientManagement/PatientList';
 import AddEditPatient from '../components/PatientManagement/AddEditPatient';
-import { userStorage, patientStorage, measurementStorage } from '../lib/storage';
-import { createMeasurement, createPatient } from '../lib/models';
+import { userStorage, patientStorage, measurementStorage, weightStorage } from '../lib/storage';
+import { createMeasurement, createWeightRecord, createPatient } from '../lib/models';
 
 async function postJson(url, body) {
   const response = await fetch(url, {
@@ -25,7 +26,9 @@ export default function App() {
   const [ready, setReady] = useState(false);
   const [email, setEmail] = useState(null);
   const [patients, setPatients] = useState([]);
+  const [activeTab, setActiveTab] = useState('blood-sugar');
   const [measurementPatient, setMeasurementPatient] = useState(null);
+  const [weightPatient, setWeightPatient] = useState(null);
   const [refreshKey, setRefreshKey] = useState(0);
   const [syncError, setSyncError] = useState(null);
 
@@ -76,6 +79,22 @@ export default function App() {
     } catch (error) {
       console.error('Measurement sync failed:', error);
       setSyncError('تعذر مزامنة القراءة مع الخادم، لكن تم حفظها على جهازك.');
+    }
+  };
+
+  const handleSaveWeight = async (data) => {
+    const weightRecord = createWeightRecord(data.patientId, data.weight, data.timestamp);
+
+    weightStorage.save(weightRecord);
+    setWeightPatient(null);
+    setRefreshKey((key) => key + 1);
+    setSyncError(null);
+
+    try {
+      await postJson('/api/weights/add', weightRecord);
+    } catch (error) {
+      console.error('Weight sync failed:', error);
+      setSyncError('تعذر مزامنة الوزن مع الخادم، لكن تم حفظه على جهازك.');
     }
   };
 
@@ -184,10 +203,12 @@ export default function App() {
         </div>
       )}
 
-      <TabNavigation onTabChange={() => {}} />
+      <TabNavigation onTabChange={setActiveTab} />
 
       <main className="p-4 flex flex-col gap-4">
-        {patients.length === 0 ? (
+        {activeTab === 'statistics' ? (
+          <p className="text-lg text-gray-600 text-center mt-8">قريبًا</p>
+        ) : patients.length === 0 ? (
           <EmptyState
             icon="👨‍👩‍👧"
             title="لا يوجد مرضى بعد"
@@ -195,15 +216,34 @@ export default function App() {
             action={openAddPatient}
             actionLabel="+ إضافة مريض"
           />
+        ) : activeTab === 'weight' ? (
+          patients.map((patient) => {
+            const latest = weightStorage.getLatest(patient.id);
+            return (
+              <PatientCard
+                key={`${patient.id}-${refreshKey}`}
+                patient={patient}
+                lastRecord={latest ? { value: latest.weight, unit: 'كجم', timestamp: latest.timestamp } : null}
+                emptyLabel="لا يوجد وزن مسجل بعد"
+                actionLabel="+ إضافة وزن"
+                onAction={setWeightPatient}
+              />
+            );
+          })
         ) : (
-          patients.map((patient) => (
-            <PatientCard
-              key={`${patient.id}-${refreshKey}`}
-              patient={patient}
-              lastMeasurement={measurementStorage.getLatest(patient.id)}
-              onNewMeasurement={setMeasurementPatient}
-            />
-          ))
+          patients.map((patient) => {
+            const latest = measurementStorage.getLatest(patient.id);
+            return (
+              <PatientCard
+                key={`${patient.id}-${refreshKey}`}
+                patient={patient}
+                lastRecord={latest ? { value: latest.reading, unit: 'mg/dL', timestamp: latest.timestamp } : null}
+                emptyLabel="لا توجد قراءات بعد"
+                actionLabel="+ قراءة جديدة"
+                onAction={setMeasurementPatient}
+              />
+            );
+          })
         )}
       </main>
 
@@ -212,6 +252,14 @@ export default function App() {
           patient={measurementPatient}
           onSave={handleSaveMeasurement}
           onCancel={() => setMeasurementPatient(null)}
+        />
+      )}
+
+      {weightPatient && (
+        <WeightForm
+          patient={weightPatient}
+          onSave={handleSaveWeight}
+          onCancel={() => setWeightPatient(null)}
         />
       )}
 
