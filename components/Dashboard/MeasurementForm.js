@@ -5,8 +5,7 @@ import { validateMeasurement } from '../../lib/validation';
 import ModalShell from '../Shared/ModalShell';
 import NumberKeypad from '../Shared/NumberKeypad';
 import Spinner from '../Shared/Spinner';
-
-const DAYS_IN_MONTH = (month, year) => new Date(year, month, 0).getDate();
+import { daysInMonth } from '../../lib/utils';
 
 export default function MeasurementForm({ patient, onSave, onCancel }) {
   const settings = settingsStorage.get() || createSettings();
@@ -30,7 +29,7 @@ export default function MeasurementForm({ patient, onSave, onCancel }) {
 
   const handleMonthChange = (newMonth) => {
     setMonth(newMonth);
-    setDay((currentDay) => Math.min(currentDay, DAYS_IN_MONTH(newMonth, year)));
+    setDay((currentDay) => Math.min(currentDay, daysInMonth(newMonth, year)));
   };
 
   const goNext = () => {
@@ -151,7 +150,7 @@ export default function MeasurementForm({ patient, onSave, onCancel }) {
           <>
             <p className="text-lg text-gray-600">تاريخ ووقت القراءة</p>
             <div className="flex gap-4">
-              <Spinner label="اليوم" value={day} onChange={setDay} min={1} max={DAYS_IN_MONTH(month, year)} />
+              <Spinner label="اليوم" value={day} onChange={setDay} min={1} max={daysInMonth(month, year)} />
               <Spinner label="الشهر" value={month} onChange={handleMonthChange} min={1} max={12} />
               {settings.timeInputMethod === 'arrows' && (
                 <>
