@@ -9,12 +9,25 @@ import AddEditPatient from '../components/PatientManagement/AddEditPatient';
 import { userStorage, patientStorage, measurementStorage } from '../lib/storage';
 import { createMeasurement, createPatient } from '../lib/models';
 
+async function postJson(url, body) {
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Request to ${url} failed with status ${response.status}`);
+  }
+}
+
 export default function App() {
   const [ready, setReady] = useState(false);
   const [email, setEmail] = useState(null);
   const [patients, setPatients] = useState([]);
   const [measurementPatient, setMeasurementPatient] = useState(null);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [syncError, setSyncError] = useState(null);
 
   // Which patient-management overlay is open, if any:
   //   null                                        — none
@@ -56,15 +69,13 @@ export default function App() {
     measurementStorage.save(measurement);
     setMeasurementPatient(null);
     setRefreshKey((key) => key + 1);
+    setSyncError(null);
 
     try {
-      await fetch('/api/measurements/add', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(measurement),
-      });
+      await postJson('/api/measurements/add', measurement);
     } catch (error) {
       console.error('Measurement sync failed:', error);
+      setSyncError('تعذر مزامنة القراءة مع الخادم، لكن تم حفظها على جهازك.');
     }
   };
 
@@ -108,30 +119,26 @@ export default function App() {
     }
     setPatients(patientStorage.getActive());
     closePatientForm();
+    setSyncError(null);
 
     try {
-      await fetch(editingPatient ? '/api/patients/edit' : '/api/patients/add', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(patient),
-      });
+      await postJson(editingPatient ? '/api/patients/edit' : '/api/patients/add', patient);
     } catch (error) {
       console.error('Patient sync failed:', error);
+      setSyncError('تعذر مزامنة بيانات المريض مع الخادم، لكن تم حفظها على جهازك.');
     }
   };
 
   const handleDeletePatient = async (patient) => {
     patientStorage.delete(patient.id);
     setPatients(patientStorage.getActive());
+    setSyncError(null);
 
     try {
-      await fetch('/api/patients/delete', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: patient.id }),
-      });
+      await postJson('/api/patients/delete', { id: patient.id });
     } catch (error) {
       console.error('Patient delete sync failed:', error);
+      setSyncError('تعذر مزامنة الحذف مع الخادم، لكن تم حذفه من جهازك.');
     }
   };
 
@@ -163,6 +170,19 @@ export default function App() {
           </button>
         </div>
       </header>
+
+      {syncError && (
+        <div className="flex items-center justify-between gap-3 bg-yellow-50 border-b border-yellow-200 px-4 py-2">
+          <p className="text-base text-yellow-800">{syncError}</p>
+          <button
+            onClick={() => setSyncError(null)}
+            aria-label="إغلاق"
+            className="min-h-touch min-w-touch text-xl text-yellow-800"
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       <TabNavigation onTabChange={() => {}} />
 
