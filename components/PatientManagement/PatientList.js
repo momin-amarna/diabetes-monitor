@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import ModalShell from '../Shared/ModalShell';
 
 export default function PatientList({ patients, onAdd, onEdit, onDelete, onClose }) {
   const [pendingDelete, setPendingDelete] = useState(null);
@@ -9,20 +10,20 @@ export default function PatientList({ patients, onAdd, onEdit, onDelete, onClose
   };
 
   return (
-    <div className="fixed inset-0 bg-white z-50 flex flex-col">
-      <header className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
+    <ModalShell
+      title="إدارة المرضى"
+      onClose={onClose}
+      footer={
         <button
-          onClick={onClose}
-          className="min-h-touch min-w-touch text-2xl text-gray-500"
-          aria-label="إغلاق"
+          onClick={onAdd}
+          className="w-full min-h-touch bg-green-600 hover:bg-green-700 text-white rounded-lg
+            text-lg font-medium transition-colors duration-200"
         >
-          ✕
+          + إضافة مريض
         </button>
-        <h2 className="text-subheading font-bold text-gray-900">إدارة المرضى</h2>
-        <span className="w-touch" />
-      </header>
-
-      <main className="flex-1 flex flex-col gap-3 px-4 py-4 overflow-y-auto">
+      }
+    >
+      <div className="flex flex-col gap-3 px-4 py-4">
         {patients.length === 0 && (
           <p className="text-lg text-gray-600 text-center mt-8">لا يوجد مرضى بعد</p>
         )}
@@ -57,17 +58,7 @@ export default function PatientList({ patients, onAdd, onEdit, onDelete, onClose
             </button>
           </div>
         ))}
-      </main>
-
-      <footer className="px-6 py-4 border-t border-gray-200">
-        <button
-          onClick={onAdd}
-          className="w-full min-h-touch bg-green-600 hover:bg-green-700 text-white rounded-lg
-            text-lg font-medium transition-colors duration-200"
-        >
-          + إضافة مريض
-        </button>
-      </footer>
+      </div>
 
       {pendingDelete && (
         <div className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center px-6">
@@ -94,6 +85,6 @@ export default function PatientList({ patients, onAdd, onEdit, onDelete, onClose
           </div>
         </div>
       )}
-    </div>
+    </ModalShell>
   );
 }
