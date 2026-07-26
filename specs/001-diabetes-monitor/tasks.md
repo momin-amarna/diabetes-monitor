@@ -124,11 +124,11 @@ Single Next.js project. All paths relative to repository root (`pages/`, `compon
 
 ### Implementation for User Story 4
 
-- [ ] T037 [P] [US4] Create `pages/api/weights/add.js`, `edit.js`, `delete.js`, `list.js`
-- [ ] T038 [US4] Build `components/Dashboard/WeightForm.js` — Step 1: weight number pad with decimal point
-- [ ] T039 [US4] Extend `WeightForm.js` — Step 2: date-only arrow spinners (day/month/year) (depends on T038)
-- [ ] T040 [US4] Wire Weight tab in `TabNavigation` to show weight-variant `PatientCard`s with "Add Weight" button
-- [ ] T041 [US4] Add validation (reject weight ≤ 0)
+- [x] T037 [P] [US4] Create `pages/api/weights/add.js`, `edit.js`, `delete.js`, `list.js`
+- [x] T038 [US4] Build `components/Dashboard/WeightForm.js` — Step 1: weight number pad with decimal point
+- [x] T039 [US4] Extend `WeightForm.js` — Step 2: date-only arrow spinners (day/month/year) (depends on T038)
+- [x] T040 [US4] Wire Weight tab in `TabNavigation` to show weight-variant `PatientCard`s with "Add Weight" button
+- [x] T041 [US4] Add validation (reject weight ≤ 0)
 
 **Checkpoint**: Weight tracking functional alongside all previous stories
 
