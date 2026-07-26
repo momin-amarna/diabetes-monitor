@@ -15,9 +15,12 @@ export default function App() {
   const [patients, setPatients] = useState([]);
   const [measurementPatient, setMeasurementPatient] = useState(null);
   const [refreshKey, setRefreshKey] = useState(0);
-  const [showPatientList, setShowPatientList] = useState(false);
-  const [editingPatient, setEditingPatient] = useState(null);
-  const [showAddEditPatient, setShowAddEditPatient] = useState(false);
+
+  // Which patient-management overlay is open, if any:
+  //   null                                        — none
+  //   { screen: 'list' }                           — the manage-patients list
+  //   { screen: 'form', mode, patient, returnToList } — add/edit form
+  const [patientOverlay, setPatientOverlay] = useState(null);
 
   useEffect(() => {
     const storedEmail = userStorage.getEmail();
@@ -65,27 +68,40 @@ export default function App() {
     }
   };
 
+  const openPatientList = () => setPatientOverlay({ screen: 'list' });
+
   const openAddPatient = () => {
-    setShowPatientList(false);
-    setEditingPatient(null);
-    setShowAddEditPatient(true);
+    setPatientOverlay((prev) => ({
+      screen: 'form',
+      mode: 'add',
+      patient: null,
+      returnToList: prev?.screen === 'list',
+    }));
   };
 
   const openEditPatient = (patient) => {
-    setShowPatientList(false);
-    setEditingPatient(patient);
-    setShowAddEditPatient(true);
+    setPatientOverlay((prev) => ({
+      screen: 'form',
+      mode: 'edit',
+      patient,
+      returnToList: prev?.screen === 'list',
+    }));
+  };
+
+  const closePatientForm = () => {
+    setPatientOverlay((prev) => (prev?.returnToList ? { screen: 'list' } : null));
   };
 
   const handleSavePatient = async (data) => {
+    const editingPatient = patientOverlay?.mode === 'edit' ? patientOverlay.patient : null;
+
     const patient = editingPatient
       ? { ...editingPatient, name: data.name, emoji: data.emoji, color: data.color }
       : createPatient(data.name, data.emoji, data.color);
 
     patientStorage.save(patient);
     setPatients(patientStorage.getActive());
-    setShowAddEditPatient(false);
-    setEditingPatient(null);
+    closePatientForm();
 
     try {
       await fetch(editingPatient ? '/api/patients/edit' : '/api/patients/add', {
@@ -127,7 +143,7 @@ export default function App() {
         <h1 className="text-subheading font-bold text-gray-900">مراقب السكري الذكي</h1>
         <div className="flex items-center gap-2">
           <button
-            onClick={() => setShowPatientList(true)}
+            onClick={openPatientList}
             aria-label="إدارة المرضى"
             className="min-h-touch min-w-touch text-2xl text-gray-600 hover:text-gray-900"
           >
@@ -173,24 +189,21 @@ export default function App() {
         />
       )}
 
-      {showPatientList && (
+      {patientOverlay?.screen === 'list' && (
         <PatientList
           patients={patients}
           onAdd={openAddPatient}
           onEdit={openEditPatient}
           onDelete={handleDeletePatient}
-          onClose={() => setShowPatientList(false)}
+          onClose={() => setPatientOverlay(null)}
         />
       )}
 
-      {showAddEditPatient && (
+      {patientOverlay?.screen === 'form' && (
         <AddEditPatient
-          patient={editingPatient}
+          patient={patientOverlay.patient}
           onSave={handleSavePatient}
-          onCancel={() => {
-            setShowAddEditPatient(false);
-            setEditingPatient(null);
-          }}
+          onCancel={closePatientForm}
         />
       )}
     </div>
