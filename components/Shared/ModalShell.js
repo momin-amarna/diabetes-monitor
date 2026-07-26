@@ -16,7 +16,7 @@ export default function ModalShell({ title, onClose, closeLabel = 'إغلاق', 
       <main className="flex-1 overflow-y-auto">{children}</main>
 
       {footer && (
-        <footer className="flex gap-3 px-6 py-4 border-t border-gray-200">{footer}</footer>
+        <footer className="flex gap-3 px-6 pt-4 pb-6 border-t border-gray-200">{footer}</footer>
       )}
     </div>
   );
