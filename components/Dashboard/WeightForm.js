@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { validateWeight } from '../../lib/validation';
-import { daysInMonth } from '../../lib/utils';
+import { daysInMonth, isFutureTimestamp } from '../../lib/utils';
 import ModalShell from '../Shared/ModalShell';
 import NumberKeypad from '../Shared/NumberKeypad';
 import Spinner from '../Shared/Spinner';
+import StepButtons from '../Shared/StepButtons';
 
 export default function WeightForm({ patient, initialData, onSave, onCancel }) {
   const isEdit = Boolean(initialData);
@@ -30,6 +31,9 @@ export default function WeightForm({ patient, initialData, onSave, onCancel }) {
     clampDay(month, newYear);
   };
 
+  const getTimestamp = () =>
+    new Date(year, month - 1, day, initialDate.getHours(), initialDate.getMinutes()).getTime();
+
   const goNext = () => {
     setError('');
 
@@ -48,10 +52,12 @@ export default function WeightForm({ patient, initialData, onSave, onCancel }) {
     setStep(1);
   };
 
-  const getTimestamp = () =>
-    new Date(year, month - 1, day, initialDate.getHours(), initialDate.getMinutes()).getTime();
-
   const handleConfirm = () => {
+    if (isFutureTimestamp(getTimestamp())) {
+      setError('لا يمكن اختيار تاريخ في المستقبل');
+      return;
+    }
+
     onSave({
       ...(isEdit ? { id: initialData.id } : {}),
       patientId: patient.id,
@@ -65,50 +71,21 @@ export default function WeightForm({ patient, initialData, onSave, onCancel }) {
       title={isEdit ? `تعديل الوزن · ${patient.name}` : `وزن جديد · ${patient.name}`}
       onClose={onCancel}
       closeLabel="إلغاء"
-      footer={
-        <>
-          {step > 1 && (
-            <button
-              onClick={goBack}
-              className="flex-1 min-h-touch border-2 border-gray-300 rounded-lg text-lg font-medium
-                text-gray-700 hover:bg-gray-50"
-            >
-              رجوع
-            </button>
-          )}
-          {step < 2 ? (
-            <button
-              onClick={goNext}
-              className="flex-1 min-h-touch bg-green-600 hover:bg-green-700 text-white rounded-lg
-                text-lg font-medium transition-colors duration-200"
-            >
-              التالي
-            </button>
-          ) : (
-            <button
-              onClick={handleConfirm}
-              className="flex-1 min-h-touch bg-green-600 hover:bg-green-700 text-white rounded-lg
-                text-lg font-medium transition-colors duration-200"
-            >
-              تأكيد
-            </button>
-          )}
-        </>
-      }
     >
-      <div className="flex flex-col items-center justify-center gap-6 px-6 py-8 min-h-full">
+      <div className="flex flex-col items-center justify-center gap-8 px-6 py-10 min-h-full">
         {step === 1 && (
           <>
-            <p className="text-lg text-gray-600">أدخل الوزن (كجم)</p>
-            <p className="text-6xl font-bold text-gray-900 min-h-[4rem]">{weight || '—'}</p>
+            <p className="text-2xl text-gray-600">أدخل الوزن (كجم)</p>
+            <p className="text-7xl font-bold text-gray-900 min-h-[5rem]">{weight || '—'}</p>
             <NumberKeypad value={weight} onChange={setWeight} maxLength={5} allowDecimal />
+            <StepButtons showBack={false} onNext={goNext} />
           </>
         )}
 
         {step === 2 && (
           <>
-            <p className="text-lg text-gray-600">تاريخ الوزن</p>
-            <div className="flex gap-4">
+            <p className="text-2xl text-gray-600">تاريخ الوزن</p>
+            <div className="flex gap-8">
               <Spinner label="اليوم" value={day} onChange={setDay} min={1} max={daysInMonth(month, year)} />
               <Spinner label="الشهر" value={month} onChange={handleMonthChange} min={1} max={12} />
               <Spinner
@@ -119,11 +96,12 @@ export default function WeightForm({ patient, initialData, onSave, onCancel }) {
                 max={now.getFullYear()}
               />
             </div>
+            <StepButtons showBack onBack={goBack} onNext={handleConfirm} nextLabel="تأكيد" />
           </>
         )}
 
         {error && (
-          <p className="text-danger text-base" role="alert">
+          <p className="text-danger text-lg" role="alert">
             {error}
           </p>
         )}

@@ -1,10 +1,11 @@
 export default function ModalShell({ title, onClose, closeLabel = 'إغلاق', footer, children }) {
   return (
     <div className="fixed inset-0 bg-white z-50 flex flex-col">
-      <header className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
+      <header className="flex items-center justify-between px-6 py-5 border-b border-gray-200 shadow-sm">
         <button
           onClick={onClose}
-          className="min-h-touch min-w-touch text-2xl text-gray-500"
+          className="min-h-touch min-w-touch text-2xl text-gray-500 rounded-full hover:bg-gray-100
+            transition-colors duration-150"
           aria-label={closeLabel}
         >
           ✕
