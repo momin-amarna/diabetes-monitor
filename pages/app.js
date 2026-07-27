@@ -9,8 +9,14 @@ import HistoryList from '../components/Dashboard/HistoryList';
 import AIInsights from '../components/Dashboard/AIInsights';
 import PatientList from '../components/PatientManagement/PatientList';
 import AddEditPatient from '../components/PatientManagement/AddEditPatient';
-import { userStorage, patientStorage, measurementStorage, weightStorage } from '../lib/storage';
-import { createMeasurement, createWeightRecord, createPatient } from '../lib/models';
+import SettingsPage from '../components/Settings/SettingsPage';
+import { userStorage, patientStorage, measurementStorage, weightStorage, settingsStorage } from '../lib/storage';
+import { createMeasurement, createWeightRecord, createPatient, createSettings } from '../lib/models';
+import { shouldShowReminderBanner, dismissReminderForToday } from '../lib/reminders';
+
+const FONT_SIZE_CLASSES = { normal: '', large: 'text-lg', xlarge: 'text-xl' };
+const SPACING_CLASSES = { normal: '', large: 'space-y-2', xlarge: 'space-y-4' };
+const HIGH_CONTRAST_CLASSES = 'bg-black text-white';
 
 async function postJson(url, body) {
   const response = await fetch(url, {
@@ -37,6 +43,9 @@ export default function App() {
   const [refreshKey, setRefreshKey] = useState(0);
   const [syncError, setSyncError] = useState(null);
   const [aiInsight, setAiInsight] = useState(null);
+  const [settings, setSettings] = useState(createSettings());
+  const [showSettings, setShowSettings] = useState(false);
+  const [showReminder, setShowReminder] = useState(false);
 
   // Which patient-management overlay is open, if any:
   //   null                                        — none
@@ -44,12 +53,24 @@ export default function App() {
   //   { screen: 'form', mode, patient, returnToList } — add/edit form
   const [patientOverlay, setPatientOverlay] = useState(null);
 
+  const loadSettings = () => {
+    let stored = settingsStorage.get();
+    if (!stored) {
+      stored = createSettings();
+      settingsStorage.save(stored);
+    }
+    setSettings(stored);
+    setShowReminder(shouldShowReminderBanner(stored));
+    return stored;
+  };
+
   useEffect(() => {
     const storedEmail = userStorage.getEmail();
     if (storedEmail) {
       patientStorage.seedDefaults();
       setPatients(patientStorage.getActive());
       setEmail(storedEmail);
+      loadSettings();
     }
     setReady(true);
   }, []);
@@ -58,12 +79,23 @@ export default function App() {
     patientStorage.seedDefaults();
     setPatients(patientStorage.getActive());
     setEmail(loggedInEmail);
+    loadSettings();
   };
 
   const handleLogout = () => {
     userStorage.clearEmail();
     setEmail(null);
     setPatients([]);
+  };
+
+  const handleUpdateSettings = (changes) => {
+    const updated = settingsStorage.update(changes);
+    if (updated) setSettings(updated);
+  };
+
+  const handleDismissReminder = () => {
+    dismissReminderForToday();
+    setShowReminder(false);
   };
 
   const handleSaveMeasurement = async (data) => {
@@ -218,8 +250,16 @@ export default function App() {
     return <LoginForm onLogin={handleLogin} />;
   }
 
+  const rootClassName = [
+    'min-h-screen',
+    settings.highContrast ? HIGH_CONTRAST_CLASSES : 'bg-bg-light',
+    FONT_SIZE_CLASSES[settings.fontSize] || '',
+  ]
+    .filter(Boolean)
+    .join(' ');
+
   return (
-    <div className="min-h-screen bg-bg-light">
+    <div className={rootClassName}>
       <header className="flex items-center justify-between px-4 py-3 bg-white border-b border-gray-200">
         <h1 className="text-subheading font-bold text-gray-900">مراقب السكري الذكي</h1>
         <div className="flex items-center gap-2">
@@ -240,6 +280,13 @@ export default function App() {
             👥
           </button>
           <button
+            onClick={() => setShowSettings(true)}
+            aria-label="الإعدادات"
+            className="min-h-touch min-w-touch text-2xl text-gray-600 hover:text-gray-900"
+          >
+            ⚙️
+          </button>
+          <button
             onClick={handleLogout}
             className="min-h-touch px-4 text-base text-gray-600 hover:text-gray-900"
           >
@@ -247,6 +294,19 @@ export default function App() {
           </button>
         </div>
       </header>
+
+      {showReminder && (
+        <div className="flex items-center justify-between gap-3 bg-blue-50 border-b border-blue-200 px-4 py-2">
+          <p className="text-base text-blue-800">تذكير: حان وقت تسجيل الوزن الأسبوعي 🗓️</p>
+          <button
+            onClick={handleDismissReminder}
+            aria-label="إغلاق"
+            className="min-h-touch min-w-touch text-xl text-blue-800"
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       {syncError && (
         <div className="flex items-center justify-between gap-3 bg-yellow-50 border-b border-yellow-200 px-4 py-2">
@@ -271,7 +331,7 @@ export default function App() {
 
       <TabNavigation onTabChange={setActiveTab} />
 
-      <main className="p-4 flex flex-col gap-4">
+      <main className={`p-4 flex flex-col gap-4 ${SPACING_CLASSES[settings.spacing] || ''}`}>
         {activeTab === 'statistics' ? (
           <p className="text-lg text-gray-600 text-center mt-8">قريبًا</p>
         ) : patients.length === 0 ? (
@@ -376,6 +436,16 @@ export default function App() {
           patient={patientOverlay.patient}
           onSave={handleSavePatient}
           onCancel={closePatientForm}
+        />
+      )}
+
+      {showSettings && (
+        <SettingsPage
+          settings={settings}
+          email={email}
+          onUpdate={handleUpdateSettings}
+          onClose={() => setShowSettings(false)}
+          onLogout={handleLogout}
         />
       )}
     </div>

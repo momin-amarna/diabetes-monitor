@@ -177,16 +177,16 @@ Single Next.js project. All paths relative to repository root (`pages/`, `compon
 
 ### Implementation for User Story 7
 
-- [ ] T051 [P] [US7] Build `components/Settings/SettingsPage.js` — shell with all sections
-- [ ] T052 [US7] Add notes screen toggle (reads/writes `lib/storage.js`, respected by T025)
-- [ ] T053 [US7] Add time input method toggle (arrows vs manual, respected by T024)
-- [ ] T054 [US7] Add font size + spacing + high contrast controls (apply via Tailwind theme classes on root layout)
-- [ ] T055 [US7] Add "hide landing page button" toggle (respected by home screen button visibility)
-- [ ] T056 [P] [US7] Build `components/Settings/ReminderSettings.js` (day dropdown + time picker, saved to storage)
-- [ ] T057 [US7] Implement `lib/reminders.js` — check current day/time against saved reminder on app load, show in-app banner if due
-- [ ] T058 [P] [US7] Build `components/Settings/BackupRestore.js` — export all localStorage data as JSON file, import/restore from JSON file
-- [ ] T059 [US7] Add "clear all data" with confirmation dialog
-- [ ] T060 [US7] Add account section (display email, copy button, logout — reuses T019)
+- [x] T051 [P] [US7] Build `components/Settings/SettingsPage.js` — shell with all sections
+- [x] T052 [US7] Add notes screen toggle (reads/writes `lib/storage.js`, respected by T025)
+- [x] T053 [US7] Add time input method toggle (arrows vs manual, respected by T024)
+- [x] T054 [US7] Add font size + spacing + high contrast controls (apply via Tailwind theme classes on root layout)
+- [x] T055 [US7] Add "hide landing page button" toggle in Settings (stored; actual home-screen button visibility to be wired once Phase 10's landing page exists)
+- [x] T056 [P] [US7] Build `components/Settings/ReminderSettings.js` (day dropdown + time picker, saved to storage)
+- [x] T057 [US7] Implement `lib/reminders.js` — check current day/time against saved reminder on app load, show in-app banner if due
+- [x] T058 [P] [US7] Build `components/Settings/BackupRestore.js` — export all localStorage data as JSON file, import/restore from JSON file
+- [x] T059 [US7] Add "clear all data" with confirmation dialog
+- [x] T060 [US7] Add account section (display email, copy button, logout — reuses T019)
 
 **Checkpoint**: All settings functional; app fully feature-complete per spec
 
