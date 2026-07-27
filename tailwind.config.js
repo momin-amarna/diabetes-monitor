@@ -8,9 +8,9 @@ module.exports = {
   theme: {
     extend: {
       fontSize: {
-        'body': ['16px', '1.5'],
-        'heading': ['28px', '1.2'],
-        'subheading': ['20px', '1.3'],
+        'body': ['1rem', '1.5'],
+        'heading': ['1.75rem', '1.2'],
+        'subheading': ['1.25rem', '1.3'],
       },
       spacing: {
         'touch': '48px',

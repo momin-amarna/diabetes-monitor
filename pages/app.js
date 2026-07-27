@@ -14,8 +14,8 @@ import { userStorage, patientStorage, measurementStorage, weightStorage, setting
 import { createMeasurement, createWeightRecord, createPatient, createSettings } from '../lib/models';
 import { shouldShowReminderBanner, dismissReminderForToday } from '../lib/reminders';
 
-const FONT_SIZE_CLASSES = { normal: '', large: 'text-lg', xlarge: 'text-xl' };
-const SPACING_CLASSES = { normal: '', large: 'space-y-2', xlarge: 'space-y-4' };
+const ROOT_FONT_SIZES = { normal: '16px', large: '18px', xlarge: '20px' };
+const MAIN_GAP_CLASSES = { normal: 'gap-4', large: 'gap-6', xlarge: 'gap-8' };
 const HIGH_CONTRAST_CLASSES = 'bg-black text-white';
 
 async function postJson(url, body) {
@@ -75,6 +75,10 @@ export default function App() {
     setReady(true);
   }, []);
 
+  useEffect(() => {
+    document.documentElement.style.fontSize = ROOT_FONT_SIZES[settings.fontSize] || ROOT_FONT_SIZES.normal;
+  }, [settings.fontSize]);
+
   const handleLogin = (loggedInEmail) => {
     patientStorage.seedDefaults();
     setPatients(patientStorage.getActive());
@@ -86,6 +90,7 @@ export default function App() {
     userStorage.clearEmail();
     setEmail(null);
     setPatients([]);
+    document.documentElement.style.fontSize = ROOT_FONT_SIZES.normal;
   };
 
   const handleUpdateSettings = (changes) => {
@@ -250,11 +255,7 @@ export default function App() {
     return <LoginForm onLogin={handleLogin} />;
   }
 
-  const rootClassName = [
-    'min-h-screen',
-    settings.highContrast ? HIGH_CONTRAST_CLASSES : 'bg-bg-light',
-    FONT_SIZE_CLASSES[settings.fontSize] || '',
-  ]
+  const rootClassName = ['min-h-screen', settings.highContrast ? HIGH_CONTRAST_CLASSES : 'bg-bg-light']
     .filter(Boolean)
     .join(' ');
 
@@ -285,12 +286,6 @@ export default function App() {
             className="min-h-touch min-w-touch text-2xl text-gray-600 hover:text-gray-900"
           >
             ⚙️
-          </button>
-          <button
-            onClick={handleLogout}
-            className="min-h-touch px-4 text-base text-gray-600 hover:text-gray-900"
-          >
-            تسجيل الخروج
           </button>
         </div>
       </header>
@@ -331,7 +326,7 @@ export default function App() {
 
       <TabNavigation onTabChange={setActiveTab} />
 
-      <main className={`p-4 flex flex-col gap-4 ${SPACING_CLASSES[settings.spacing] || ''}`}>
+      <main className={`p-4 flex flex-col ${MAIN_GAP_CLASSES[settings.spacing] || MAIN_GAP_CLASSES.normal}`}>
         {activeTab === 'statistics' ? (
           <p className="text-lg text-gray-600 text-center mt-8">قريبًا</p>
         ) : patients.length === 0 ? (
