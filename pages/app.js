@@ -6,6 +6,7 @@ import TabNavigation from '../components/Dashboard/TabNavigation';
 import MeasurementForm from '../components/Dashboard/MeasurementForm';
 import WeightForm from '../components/Dashboard/WeightForm';
 import HistoryList from '../components/Dashboard/HistoryList';
+import AIInsights from '../components/Dashboard/AIInsights';
 import PatientList from '../components/PatientManagement/PatientList';
 import AddEditPatient from '../components/PatientManagement/AddEditPatient';
 import { userStorage, patientStorage, measurementStorage, weightStorage } from '../lib/storage';
@@ -35,6 +36,7 @@ export default function App() {
   const [showHistory, setShowHistory] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
   const [syncError, setSyncError] = useState(null);
+  const [aiInsight, setAiInsight] = useState(null);
 
   // Which patient-management overlay is open, if any:
   //   null                                        — none
@@ -71,6 +73,7 @@ export default function App() {
       : createMeasurement(data.patientId, data.reading, data.fastingHours, data.timestamp, data.notes);
 
     measurementStorage.save(measurement);
+    setAiInsight({ patient: measurementPatient, measurement });
     setMeasurementPatient(null);
     setEditingMeasurement(null);
     setRefreshKey((key) => key + 1);
@@ -256,6 +259,14 @@ export default function App() {
             ✕
           </button>
         </div>
+      )}
+
+      {aiInsight && (
+        <AIInsights
+          patient={aiInsight.patient}
+          measurement={aiInsight.measurement}
+          onDismiss={() => setAiInsight(null)}
+        />
       )}
 
       <TabNavigation onTabChange={setActiveTab} />

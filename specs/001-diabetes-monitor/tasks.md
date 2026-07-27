@@ -160,10 +160,10 @@ Single Next.js project. All paths relative to repository root (`pages/`, `compon
 
 ### Implementation for User Story 6
 
-- [ ] T047 [US6] Create `pages/api/health/analyze.js` — calls `lib/fetchai-client.js` with reading + fasting hours, returns insight text
-- [ ] T048 [US6] Build `components/Dashboard/AIInsights.js` — displays insight text + loading state + fallback message on failure
-- [ ] T049 [US6] Wire `AIInsights.js` to trigger automatically after T028 (measurement save) completes
-- [ ] T050 [US6] Handle Fetch AI timeout/failure gracefully (measurement must still save successfully regardless of AI result)
+- [x] T047 [US6] Create `pages/api/health/analyze.js` — calls `lib/fetchai-client.js` with reading + fasting hours, returns insight text
+- [x] T048 [US6] Build `components/Dashboard/AIInsights.js` — displays insight text + loading state + fallback message on failure
+- [x] T049 [US6] Wire `AIInsights.js` to trigger automatically after T028 (measurement save) completes
+- [x] T050 [US6] Handle Fetch AI timeout/failure gracefully (measurement must still save successfully regardless of AI result)
 
 **Checkpoint**: AI insights working without blocking core measurement flow
 
