@@ -5,13 +5,15 @@ import ModalShell from '../Shared/ModalShell';
 import NumberKeypad from '../Shared/NumberKeypad';
 import Spinner from '../Shared/Spinner';
 
-export default function WeightForm({ patient, onSave, onCancel }) {
+export default function WeightForm({ patient, initialData, onSave, onCancel }) {
+  const isEdit = Boolean(initialData);
   const now = new Date();
+  const initialDate = initialData ? new Date(initialData.timestamp) : now;
   const [step, setStep] = useState(1);
-  const [weight, setWeight] = useState('');
-  const [day, setDay] = useState(now.getDate());
-  const [month, setMonth] = useState(now.getMonth() + 1);
-  const [year, setYear] = useState(now.getFullYear());
+  const [weight, setWeight] = useState(initialData ? String(initialData.weight) : '');
+  const [day, setDay] = useState(initialDate.getDate());
+  const [month, setMonth] = useState(initialDate.getMonth() + 1);
+  const [year, setYear] = useState(initialDate.getFullYear());
   const [error, setError] = useState('');
 
   const clampDay = (newMonth, newYear) => {
@@ -47,15 +49,20 @@ export default function WeightForm({ patient, onSave, onCancel }) {
   };
 
   const getTimestamp = () =>
-    new Date(year, month - 1, day, now.getHours(), now.getMinutes()).getTime();
+    new Date(year, month - 1, day, initialDate.getHours(), initialDate.getMinutes()).getTime();
 
   const handleConfirm = () => {
-    onSave({ patientId: patient.id, weight: Number(weight), timestamp: getTimestamp() });
+    onSave({
+      ...(isEdit ? { id: initialData.id } : {}),
+      patientId: patient.id,
+      weight: Number(weight),
+      timestamp: getTimestamp(),
+    });
   };
 
   return (
     <ModalShell
-      title={`وزن جديد · ${patient.name}`}
+      title={isEdit ? `تعديل الوزن · ${patient.name}` : `وزن جديد · ${patient.name}`}
       onClose={onCancel}
       closeLabel="إلغاء"
       footer={

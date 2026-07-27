@@ -142,11 +142,11 @@ Single Next.js project. All paths relative to repository root (`pages/`, `compon
 
 ### Implementation for User Story 5
 
-- [ ] T042 [P] [US5] Build `components/Dashboard/HistoryList.js` (shared component, works for both measurements and weights via props)
-- [ ] T043 [US5] Add filter controls (by patient, by date range) to `HistoryList.js`
-- [ ] T044 [US5] Add edit icon per row → reopens `MeasurementForm`/`WeightForm` pre-filled with existing values
-- [ ] T045 [US5] Add delete icon per row → confirmation dialog → calls respective `delete.js` API route
-- [ ] T046 [US5] Wire history access point (e.g., long-press patient card or dedicated link) to open `HistoryList.js`
+- [x] T042 [P] [US5] Build `components/Dashboard/HistoryList.js` (shared component, works for both measurements and weights via props)
+- [x] T043 [US5] Add filter controls (by patient, by date range) to `HistoryList.js`
+- [x] T044 [US5] Add edit icon per row → reopens `MeasurementForm`/`WeightForm` pre-filled with existing values
+- [x] T045 [US5] Add delete icon per row → confirmation dialog → calls respective `delete.js` API route
+- [x] T046 [US5] Wire history access point (e.g., long-press patient card or dedicated link) to open `HistoryList.js`
 
 **Checkpoint**: Full CRUD on measurements and weights complete
 

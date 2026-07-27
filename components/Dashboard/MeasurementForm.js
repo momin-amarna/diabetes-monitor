@@ -7,25 +7,27 @@ import NumberKeypad from '../Shared/NumberKeypad';
 import Spinner from '../Shared/Spinner';
 import { daysInMonth } from '../../lib/utils';
 
-export default function MeasurementForm({ patient, onSave, onCancel }) {
+export default function MeasurementForm({ patient, initialData, onSave, onCancel }) {
   const settings = settingsStorage.get() || createSettings();
+  const isEdit = Boolean(initialData);
 
   const now = new Date();
+  const initialDate = initialData ? new Date(initialData.timestamp) : now;
   const [step, setStep] = useState(1);
-  const [reading, setReading] = useState('');
-  const [fastingHours, setFastingHours] = useState('');
-  const [day, setDay] = useState(now.getDate());
-  const [month, setMonth] = useState(now.getMonth() + 1);
-  const [hour, setHour] = useState(now.getHours());
-  const [minute, setMinute] = useState(now.getMinutes());
+  const [reading, setReading] = useState(initialData ? String(initialData.reading) : '');
+  const [fastingHours, setFastingHours] = useState(initialData ? String(initialData.fastingHours) : '');
+  const [day, setDay] = useState(initialDate.getDate());
+  const [month, setMonth] = useState(initialDate.getMonth() + 1);
+  const [hour, setHour] = useState(initialDate.getHours());
+  const [minute, setMinute] = useState(initialDate.getMinutes());
   const [manualTime, setManualTime] = useState(
-    `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`
+    `${String(initialDate.getHours()).padStart(2, '0')}:${String(initialDate.getMinutes()).padStart(2, '0')}`
   );
-  const [wantsNotes, setWantsNotes] = useState(null);
-  const [notes, setNotes] = useState('');
+  const [wantsNotes, setWantsNotes] = useState(initialData?.notes ? true : null);
+  const [notes, setNotes] = useState(initialData?.notes || '');
   const [error, setError] = useState('');
 
-  const year = now.getFullYear();
+  const year = initialDate.getFullYear();
 
   const handleMonthChange = (newMonth) => {
     setMonth(newMonth);
@@ -84,6 +86,7 @@ export default function MeasurementForm({ patient, onSave, onCancel }) {
 
   const handleConfirm = () => {
     const measurement = {
+      ...(isEdit ? { id: initialData.id } : {}),
       patientId: patient.id,
       reading: Number(reading),
       fastingHours: Number(fastingHours),
@@ -95,7 +98,7 @@ export default function MeasurementForm({ patient, onSave, onCancel }) {
 
   return (
     <ModalShell
-      title={`قراءة جديدة · ${patient.name}`}
+      title={isEdit ? `تعديل القراءة · ${patient.name}` : `قراءة جديدة · ${patient.name}`}
       onClose={onCancel}
       closeLabel="إلغاء"
       footer={

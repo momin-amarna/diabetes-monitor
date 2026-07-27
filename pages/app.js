@@ -5,6 +5,7 @@ import EmptyState from '../components/Dashboard/EmptyState';
 import TabNavigation from '../components/Dashboard/TabNavigation';
 import MeasurementForm from '../components/Dashboard/MeasurementForm';
 import WeightForm from '../components/Dashboard/WeightForm';
+import HistoryList from '../components/Dashboard/HistoryList';
 import PatientList from '../components/PatientManagement/PatientList';
 import AddEditPatient from '../components/PatientManagement/AddEditPatient';
 import { userStorage, patientStorage, measurementStorage, weightStorage } from '../lib/storage';
@@ -28,7 +29,10 @@ export default function App() {
   const [patients, setPatients] = useState([]);
   const [activeTab, setActiveTab] = useState('blood-sugar');
   const [measurementPatient, setMeasurementPatient] = useState(null);
+  const [editingMeasurement, setEditingMeasurement] = useState(null);
   const [weightPatient, setWeightPatient] = useState(null);
+  const [editingWeight, setEditingWeight] = useState(null);
+  const [showHistory, setShowHistory] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
   const [syncError, setSyncError] = useState(null);
 
@@ -61,21 +65,19 @@ export default function App() {
   };
 
   const handleSaveMeasurement = async (data) => {
-    const measurement = createMeasurement(
-      data.patientId,
-      data.reading,
-      data.fastingHours,
-      data.timestamp,
-      data.notes
-    );
+    const isEdit = Boolean(data.id);
+    const measurement = isEdit
+      ? { ...editingMeasurement, ...data }
+      : createMeasurement(data.patientId, data.reading, data.fastingHours, data.timestamp, data.notes);
 
     measurementStorage.save(measurement);
     setMeasurementPatient(null);
+    setEditingMeasurement(null);
     setRefreshKey((key) => key + 1);
     setSyncError(null);
 
     try {
-      await postJson('/api/measurements/add', measurement);
+      await postJson(isEdit ? '/api/measurements/edit' : '/api/measurements/add', measurement);
     } catch (error) {
       console.error('Measurement sync failed:', error);
       setSyncError('تعذر مزامنة القراءة مع الخادم، لكن تم حفظها على جهازك.');
@@ -83,19 +85,63 @@ export default function App() {
   };
 
   const handleSaveWeight = async (data) => {
-    const weightRecord = createWeightRecord(data.patientId, data.weight, data.timestamp);
+    const isEdit = Boolean(data.id);
+    const weightRecord = isEdit
+      ? { ...editingWeight, ...data }
+      : createWeightRecord(data.patientId, data.weight, data.timestamp);
 
     weightStorage.save(weightRecord);
     setWeightPatient(null);
+    setEditingWeight(null);
     setRefreshKey((key) => key + 1);
     setSyncError(null);
 
     try {
-      await postJson('/api/weights/add', weightRecord);
+      await postJson(isEdit ? '/api/weights/edit' : '/api/weights/add', weightRecord);
     } catch (error) {
       console.error('Weight sync failed:', error);
       setSyncError('تعذر مزامنة الوزن مع الخادم، لكن تم حفظه على جهازك.');
     }
+  };
+
+  const handleDeleteMeasurement = async (record) => {
+    measurementStorage.delete(record.id);
+    setRefreshKey((key) => key + 1);
+    setSyncError(null);
+
+    try {
+      await postJson('/api/measurements/delete', { id: record.id });
+    } catch (error) {
+      console.error('Measurement delete sync failed:', error);
+      setSyncError('تعذر مزامنة الحذف مع الخادم، لكن تم حذفه من جهازك.');
+    }
+  };
+
+  const handleDeleteWeight = async (record) => {
+    weightStorage.delete(record.id);
+    setRefreshKey((key) => key + 1);
+    setSyncError(null);
+
+    try {
+      await postJson('/api/weights/delete', { id: record.id });
+    } catch (error) {
+      console.error('Weight delete sync failed:', error);
+      setSyncError('تعذر مزامنة الحذف مع الخادم، لكن تم حذفه من جهازك.');
+    }
+  };
+
+  const openEditMeasurement = (record) => {
+    const patient = patientStorage.getById(record.patientId);
+    setEditingMeasurement(record);
+    setMeasurementPatient(patient || { id: record.patientId, name: 'مريض محذوف', emoji: '❓', color: '#6b7280' });
+    setShowHistory(false);
+  };
+
+  const openEditWeight = (record) => {
+    const patient = patientStorage.getById(record.patientId);
+    setEditingWeight(record);
+    setWeightPatient(patient || { id: record.patientId, name: 'مريض محذوف', emoji: '❓', color: '#6b7280' });
+    setShowHistory(false);
   };
 
   const openPatientList = () => setPatientOverlay({ screen: 'list' });
@@ -174,6 +220,15 @@ export default function App() {
       <header className="flex items-center justify-between px-4 py-3 bg-white border-b border-gray-200">
         <h1 className="text-subheading font-bold text-gray-900">مراقب السكري الذكي</h1>
         <div className="flex items-center gap-2">
+          {activeTab !== 'statistics' && (
+            <button
+              onClick={() => setShowHistory(true)}
+              aria-label="سجل القراءات"
+              className="min-h-touch min-w-touch text-2xl text-gray-600 hover:text-gray-900"
+            >
+              📋
+            </button>
+          )}
           <button
             onClick={openPatientList}
             aria-label="إدارة المرضى"
@@ -250,16 +305,48 @@ export default function App() {
       {measurementPatient && (
         <MeasurementForm
           patient={measurementPatient}
+          initialData={editingMeasurement}
           onSave={handleSaveMeasurement}
-          onCancel={() => setMeasurementPatient(null)}
+          onCancel={() => {
+            setMeasurementPatient(null);
+            setEditingMeasurement(null);
+          }}
         />
       )}
 
       {weightPatient && (
         <WeightForm
           patient={weightPatient}
+          initialData={editingWeight}
           onSave={handleSaveWeight}
-          onCancel={() => setWeightPatient(null)}
+          onCancel={() => {
+            setWeightPatient(null);
+            setEditingWeight(null);
+          }}
+        />
+      )}
+
+      {showHistory && activeTab === 'weight' && (
+        <HistoryList
+          title="سجل الوزن"
+          patients={patients}
+          records={weightStorage.getAll()}
+          formatValue={(record) => `${record.weight} كجم`}
+          onEdit={openEditWeight}
+          onDelete={handleDeleteWeight}
+          onClose={() => setShowHistory(false)}
+        />
+      )}
+
+      {showHistory && activeTab !== 'weight' && activeTab !== 'statistics' && (
+        <HistoryList
+          title="سجل القراءات"
+          patients={patients}
+          records={measurementStorage.getAll()}
+          formatValue={(record) => `${record.reading} mg/dL · صيام ${record.fastingHours} س`}
+          onEdit={openEditMeasurement}
+          onDelete={handleDeleteMeasurement}
+          onClose={() => setShowHistory(false)}
         />
       )}
 
