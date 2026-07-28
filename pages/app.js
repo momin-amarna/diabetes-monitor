@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import LoginForm from '../components/Auth/LoginForm';
 import PatientCard from '../components/Dashboard/PatientCard';
 import EmptyState from '../components/Dashboard/EmptyState';
@@ -266,6 +267,15 @@ export default function App() {
           مراقب السكري الذكي
         </h1>
         <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
+          {!settings.hideLandingButton && (
+            <Link
+              href="/"
+              aria-label="الصفحة الرئيسية"
+              className="min-h-touch min-w-touch flex items-center justify-center text-2xl text-gray-600 hover:text-gray-900"
+            >
+              🏠
+            </Link>
+          )}
           {activeTab !== 'statistics' && (
             <button
               onClick={() => setShowHistory(true)}

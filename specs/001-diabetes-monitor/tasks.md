@@ -196,14 +196,14 @@ Single Next.js project. All paths relative to repository root (`pages/`, `compon
 
 **Purpose**: Public-facing landing page and live deployment
 
-- [ ] T061 [P] Build `components/LandingPage/Hero.js`
-- [ ] T062 [P] Build `components/LandingPage/Problem.js`
-- [ ] T063 [P] Build `components/LandingPage/Solution.js`
-- [ ] T064 [P] Build `components/LandingPage/Features.js`
-- [ ] T065 [P] Build `components/LandingPage/Demo.js` (video embed placeholder)
-- [ ] T066 [P] Build `components/LandingPage/CTA.js`
-- [ ] T067 Assemble `pages/index.js` from all landing components above
-- [ ] T068 Deploy project to Vercel, configure environment variables in Vercel dashboard
+- [x] T061 [P] Build `components/LandingPage/Hero.js`
+- [x] T062 [P] Build `components/LandingPage/Problem.js`
+- [x] T063 [P] Build `components/LandingPage/Solution.js`
+- [x] T064 [P] Build `components/LandingPage/Features.js`
+- [x] T065 [P] Build `components/LandingPage/Demo.js` (video embed placeholder)
+- [x] T066 [P] Build `components/LandingPage/CTA.js`
+- [x] T067 Assemble `pages/index.js` from all landing components above
+- [x] T068 Deploy project to Vercel (done by user; env vars for Sheets/Fetch AI still pending in Vercel dashboard)
 - [ ] T069 Verify production build works end-to-end (login → measurement → AI insight → Sheets sync)
 
 ---
