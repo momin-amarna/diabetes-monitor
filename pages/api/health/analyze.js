@@ -1,3 +1,4 @@
+import { createHandler } from '../../../lib/api-utils';
 import { validateMeasurement } from '../../../lib/validation';
 
 const PLACEHOLDER_VALUES = new Set([undefined, '', 'YOUR_API_KEY_HERE']);
@@ -58,12 +59,7 @@ async function getAgentInsight(reading, fastingHours) {
   }
 }
 
-export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    res.setHeader('Allow', ['POST']);
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
+export default createHandler('POST', async (req, res) => {
   const { reading, fastingHours } = req.body || {};
 
   const { valid, errors } = validateMeasurement({ reading, fastingHours });
@@ -97,4 +93,4 @@ export default async function handler(req, res) {
       source: 'rules',
     });
   }
-}
+});
