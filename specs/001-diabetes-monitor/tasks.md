@@ -215,7 +215,7 @@ Single Next.js project. All paths relative to repository root (`pages/`, `compon
 - [ ] T072 Review all components for RTL correctness and touch target sizes
 - [ ] T073 Code cleanup pass — remove dead code, ensure DRY per constitution
 - [ ] T074 Final manual test pass through all 7 user stories end-to-end
-- [ ] T075 Write `README.md` with setup/run/deploy instructions
+- [x] T075 Write `README.md` with setup/run/deploy instructions
 
 ---
 
