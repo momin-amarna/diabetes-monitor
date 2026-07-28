@@ -72,11 +72,13 @@ export default function WeightForm({ patient, initialData, onSave, onCancel }) {
       onClose={onCancel}
       closeLabel="إلغاء"
     >
-      <div className="flex flex-col items-center justify-center gap-8 px-6 py-10 min-h-full">
+      <div className="flex flex-col items-center justify-center gap-4 sm:gap-8 px-4 py-6 sm:px-6 sm:py-10 min-h-full">
         {step === 1 && (
           <>
-            <p className="text-2xl text-gray-600">أدخل الوزن (كجم)</p>
-            <p className="text-7xl font-bold text-gray-900 min-h-[5rem]">{weight || '—'}</p>
+            <p className="text-lg sm:text-2xl text-gray-600">أدخل الوزن (كجم)</p>
+            <p className="text-5xl sm:text-7xl font-bold text-gray-900 min-h-[3.5rem] sm:min-h-[5rem]">
+              {weight || '—'}
+            </p>
             <NumberKeypad value={weight} onChange={setWeight} maxLength={5} allowDecimal />
             <StepButtons showBack={false} onNext={goNext} />
           </>
@@ -84,8 +86,8 @@ export default function WeightForm({ patient, initialData, onSave, onCancel }) {
 
         {step === 2 && (
           <>
-            <p className="text-2xl text-gray-600">تاريخ الوزن</p>
-            <div className="flex gap-8">
+            <p className="text-lg sm:text-2xl text-gray-600">تاريخ الوزن</p>
+            <div className="flex gap-3 sm:gap-8">
               <Spinner label="اليوم" value={day} onChange={setDay} min={1} max={daysInMonth(month, year)} />
               <Spinner label="الشهر" value={month} onChange={handleMonthChange} min={1} max={12} />
               <Spinner
@@ -101,7 +103,7 @@ export default function WeightForm({ patient, initialData, onSave, onCancel }) {
         )}
 
         {error && (
-          <p className="text-danger text-lg" role="alert">
+          <p className="text-danger text-base sm:text-lg" role="alert">
             {error}
           </p>
         )}

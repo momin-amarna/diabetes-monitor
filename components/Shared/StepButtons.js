@@ -1,6 +1,6 @@
 export default function StepButtons({ showBack, onBack, onNext, nextLabel = 'التالي' }) {
   return (
-    <div className="flex gap-3 w-full max-w-sm mt-8">
+    <div className="flex gap-3 w-full max-w-sm mt-4 sm:mt-8">
       {showBack && (
         <button
           type="button"

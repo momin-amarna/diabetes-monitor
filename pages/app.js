@@ -261,9 +261,11 @@ export default function App() {
 
   return (
     <div className={rootClassName}>
-      <header className="flex items-center justify-between px-6 py-5 bg-white border-b border-gray-200 shadow-sm">
-        <h1 className="text-subheading font-bold text-gray-900">مراقب السكري الذكي</h1>
-        <div className="flex items-center gap-4">
+      <header className="flex items-center justify-between gap-2 px-4 py-3 sm:px-6 sm:py-5 bg-white border-b border-gray-200 shadow-sm">
+        <h1 className="flex-1 min-w-0 truncate text-lg sm:text-subheading font-bold text-gray-900">
+          مراقب السكري الذكي
+        </h1>
+        <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
           {activeTab !== 'statistics' && (
             <button
               onClick={() => setShowHistory(true)}

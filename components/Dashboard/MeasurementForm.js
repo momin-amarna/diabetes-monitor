@@ -113,11 +113,13 @@ export default function MeasurementForm({ patient, initialData, onSave, onCancel
       onClose={onCancel}
       closeLabel="إلغاء"
     >
-      <div className="flex flex-col items-center justify-center gap-8 px-6 py-10 min-h-full">
+      <div className="flex flex-col items-center justify-center gap-4 sm:gap-8 px-4 py-6 sm:px-6 sm:py-10 min-h-full">
         {step === 1 && (
           <>
-            <p className="text-2xl text-gray-600">أدخل قراءة السكر (mg/dL)</p>
-            <p className="text-7xl font-bold text-gray-900 min-h-[5rem]">{reading || '—'}</p>
+            <p className="text-lg sm:text-2xl text-gray-600">أدخل قراءة السكر (mg/dL)</p>
+            <p className="text-5xl sm:text-7xl font-bold text-gray-900 min-h-[3.5rem] sm:min-h-[5rem]">
+              {reading || '—'}
+            </p>
             <NumberKeypad value={reading} onChange={setReading} maxLength={3} />
             <StepButtons showBack={false} onNext={goNext} />
           </>
@@ -125,8 +127,10 @@ export default function MeasurementForm({ patient, initialData, onSave, onCancel
 
         {step === 2 && (
           <>
-            <p className="text-2xl text-gray-600">كم عدد ساعات الصيام؟</p>
-            <p className="text-7xl font-bold text-gray-900 min-h-[5rem]">{fastingHours || '—'}</p>
+            <p className="text-lg sm:text-2xl text-gray-600">كم عدد ساعات الصيام؟</p>
+            <p className="text-5xl sm:text-7xl font-bold text-gray-900 min-h-[3.5rem] sm:min-h-[5rem]">
+              {fastingHours || '—'}
+            </p>
             <NumberKeypad value={fastingHours} onChange={setFastingHours} maxLength={2} />
             <StepButtons showBack onBack={goBack} onNext={goNext} />
           </>
@@ -134,8 +138,8 @@ export default function MeasurementForm({ patient, initialData, onSave, onCancel
 
         {step === 3 && (
           <>
-            <p className="text-2xl text-gray-600">تاريخ ووقت القراءة</p>
-            <div className="flex gap-8">
+            <p className="text-lg sm:text-2xl text-gray-600">تاريخ ووقت القراءة</p>
+            <div className="flex gap-3 sm:gap-8">
               <Spinner label="اليوم" value={day} onChange={setDay} min={1} max={daysInMonth(month, year)} />
               <Spinner label="الشهر" value={month} onChange={handleMonthChange} min={1} max={12} />
               {settings.timeInputMethod === 'arrows' && (
@@ -150,8 +154,8 @@ export default function MeasurementForm({ patient, initialData, onSave, onCancel
                 type="time"
                 value={manualTime}
                 onChange={(e) => setManualTime(e.target.value)}
-                className="min-h-touch px-6 py-3 text-4xl border-2 border-gray-200 rounded-2xl text-center
-                  shadow-sm"
+                className="min-h-touch px-4 py-2 sm:px-6 sm:py-3 text-2xl sm:text-4xl border-2 border-gray-200
+                  rounded-2xl text-center shadow-sm"
               />
             )}
             <StepButtons showBack onBack={goBack} onNext={goNext} />
@@ -160,12 +164,12 @@ export default function MeasurementForm({ patient, initialData, onSave, onCancel
 
         {step === 4 && (
           <>
-            <p className="text-2xl text-gray-600">هل تريد إضافة ملاحظات؟</p>
+            <p className="text-lg sm:text-2xl text-gray-600">هل تريد إضافة ملاحظات؟</p>
             <div className="flex gap-4">
               <button
                 type="button"
                 onClick={() => setWantsNotes(true)}
-                className={`min-h-touch px-8 rounded-2xl text-2xl font-medium border-2 transition-colors duration-150 ${
+                className={`min-h-touch px-6 sm:px-8 rounded-2xl text-lg sm:text-2xl font-medium border-2 transition-colors duration-150 ${
                   wantsNotes === true
                     ? 'border-green-600 bg-green-50 text-green-700'
                     : 'border-gray-300 text-gray-700'
@@ -179,7 +183,7 @@ export default function MeasurementForm({ patient, initialData, onSave, onCancel
                   setWantsNotes(false);
                   setNotes('');
                 }}
-                className={`min-h-touch px-8 rounded-2xl text-2xl font-medium border-2 transition-colors duration-150 ${
+                className={`min-h-touch px-6 sm:px-8 rounded-2xl text-lg sm:text-2xl font-medium border-2 transition-colors duration-150 ${
                   wantsNotes === false
                     ? 'border-green-600 bg-green-50 text-green-700'
                     : 'border-gray-300 text-gray-700'
@@ -194,7 +198,7 @@ export default function MeasurementForm({ patient, initialData, onSave, onCancel
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="اكتب ملاحظاتك هنا..."
                 rows={4}
-                className="w-full max-w-sm px-4 py-3 text-xl border-2 border-gray-200 rounded-2xl
+                className="w-full max-w-sm px-4 py-3 text-lg sm:text-xl border-2 border-gray-200 rounded-2xl
                   shadow-sm focus:outline-none focus:ring-2 focus:ring-green-600"
               />
             )}
@@ -203,24 +207,24 @@ export default function MeasurementForm({ patient, initialData, onSave, onCancel
         )}
 
         {step === 5 && (
-          <div className="w-full max-w-sm flex flex-col gap-6">
-            <h3 className="text-3xl font-bold text-gray-900 text-center mb-2">ملخص القراءة</h3>
-            <div className="flex justify-between text-2xl">
+          <div className="w-full max-w-sm flex flex-col gap-4 sm:gap-6">
+            <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center mb-2">ملخص القراءة</h3>
+            <div className="flex justify-between text-lg sm:text-2xl">
               <span className="text-gray-600">القراءة</span>
               <span className="font-bold">{reading} mg/dL</span>
             </div>
-            <div className="flex justify-between text-2xl">
+            <div className="flex justify-between text-lg sm:text-2xl">
               <span className="text-gray-600">ساعات الصيام</span>
               <span className="font-bold">{fastingHours}</span>
             </div>
-            <div className="flex justify-between text-2xl">
+            <div className="flex justify-between text-lg sm:text-2xl">
               <span className="text-gray-600">التاريخ والوقت</span>
               <span className="font-bold">
                 {new Date(getTimestamp()).toLocaleString('ar-EG')}
               </span>
             </div>
             {wantsNotes && notes && (
-              <div className="text-2xl">
+              <div className="text-lg sm:text-2xl">
                 <span className="text-gray-600 block mb-1">ملاحظات</span>
                 <p className="font-medium">{notes}</p>
               </div>
@@ -230,7 +234,7 @@ export default function MeasurementForm({ patient, initialData, onSave, onCancel
         )}
 
         {error && (
-          <p className="text-danger text-lg" role="alert">
+          <p className="text-danger text-base sm:text-lg" role="alert">
             {error}
           </p>
         )}
