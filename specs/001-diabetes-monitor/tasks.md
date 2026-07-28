@@ -212,8 +212,8 @@ Single Next.js project. All paths relative to repository root (`pages/`, `compon
 
 - [ ] T070 [P] Add error handling + user-friendly error messages across all API routes
 - [x] T071 [P] Verify offline behavior (found & fixed: service worker was never registered; verified via simulated offline network that the app shell loads from cache, measurements save locally with a graceful sync-error banner, and saves sync cleanly once back online — Sheets reconnect-sync itself is N/A since that integration isn't implemented yet, see README)
-- [ ] T072 Review all components for RTL correctness and touch target sizes
-- [ ] T073 Code cleanup pass — remove dead code, ensure DRY per constitution
+- [x] T072 Review all components for RTL correctness and touch target sizes (swept for hardcoded ml-/mr-/left-/right- classes and directional arrow icons — only one `text-left`, intentionally on the LTR email input; all non-button/link inputs across the app already carry explicit `min-h-touch`, and the global CSS rule covers every button/link/checkbox/radio)
+- [x] T073 Code cleanup pass — remove dead code, ensure DRY per constitution (removed unused fetchai-client session/message helpers and the broken unused sheetsAPI object, both calling endpoints that don't exist and had zero callers; consolidated all API route method-guard/error-handling boilerplate into createHandler per T070)
 - [ ] T074 Final manual test pass through all 7 user stories end-to-end
 - [x] T075 Write `README.md` with setup/run/deploy instructions
 
