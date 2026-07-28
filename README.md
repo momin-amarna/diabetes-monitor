@@ -71,7 +71,7 @@ rule-based insight fallback.
 | `GOOGLE_CLIENT_ID`              | OAuth for Google Sheets access              | Optional  |
 | `GOOGLE_SHEETS_SPREADSHEET_ID`  | Target spreadsheet for sync                 | Optional  |
 | `AGENTVERSE_API_KEY`            | Fetch AI health insight generation          | Optional  |
-| `NEXT_PUBLIC_DEMO_VIDEO_URL`    | Embeds a demo video on the landing page     | Optional  |
+| `NEXT_PUBLIC_DEMO_VIDEO_URL`    | Overrides the bundled demo video with an embedded URL (e.g. YouTube) | Optional  |
 
 > **Note:** Google Sheets sync currently reports whether it's configured
 > (`isSheetsConfigured()`) but the OAuth read/write flow itself
