@@ -14,9 +14,9 @@ export default function AddEditPatient({ patient, onSave, onCancel }) {
   const isEditing = Boolean(patient);
 
   const handleSave = () => {
-    const { valid, errors } = validatePatient({ name, emoji, color });
+    const { valid, errors } = validatePatient({ name, color });
     if (!valid) {
-      setError(errors.name || errors.emoji || errors.color);
+      setError(errors.name || errors.color);
       return;
     }
     setError('');
@@ -66,6 +66,16 @@ export default function AddEditPatient({ patient, onSave, onCancel }) {
         <div>
           <p className="text-lg text-gray-600 mb-2">الرمز</p>
           <div className="grid grid-cols-4 gap-3">
+            <button
+              type="button"
+              onClick={() => setEmoji('')}
+              aria-pressed={emoji === ''}
+              className={`min-h-touch min-w-touch text-base font-medium rounded-lg border-2 ${
+                emoji === '' ? 'border-green-600 bg-green-50 text-green-700' : 'border-gray-200 text-gray-500'
+              }`}
+            >
+              بدون
+            </button>
             {EMOJI_OPTIONS.map((option) => (
               <button
                 key={option}

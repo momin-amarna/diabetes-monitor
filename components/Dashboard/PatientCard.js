@@ -1,4 +1,4 @@
-import { formatTimeAgo } from '../../lib/utils';
+import { formatTimeAgo, getPatientInitial } from '../../lib/utils';
 
 export default function PatientCard({
   patient,
@@ -26,7 +26,16 @@ export default function PatientCard({
       }}
     >
       <div className="flex items-center gap-4">
-        <div className="text-5xl">{patient.emoji}</div>
+        {patient.emoji ? (
+          <div className="text-5xl">{patient.emoji}</div>
+        ) : (
+          <div
+            className="w-14 h-14 rounded-full bg-white/25 flex items-center justify-center
+              text-2xl font-bold flex-shrink-0"
+          >
+            {getPatientInitial(patient.name)}
+          </div>
+        )}
         <div className="flex-1 min-w-0">
           <h3 className="text-subheading font-bold truncate">{patient.name}</h3>
           {lastRecord ? (

@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import ModalShell from '../Shared/ModalShell';
+import { getPatientInitial } from '../../lib/utils';
 
 export default function HistoryList({ title, patients, records, formatValue, onEdit, onDelete, onClose }) {
   const [patientFilter, setPatientFilter] = useState('all');
@@ -41,7 +42,7 @@ export default function HistoryList({ title, patients, records, formatValue, onE
             <option value="all">كل المرضى</option>
             {patients.map((patient) => (
               <option key={patient.id} value={patient.id}>
-                {patient.emoji} {patient.name}
+                {patient.emoji ? `${patient.emoji} ` : ''}{patient.name}
               </option>
             ))}
           </select>
@@ -74,7 +75,9 @@ export default function HistoryList({ title, patients, records, formatValue, onE
               key={record.id}
               className="flex items-center gap-3 p-3 rounded-lg border border-gray-200"
             >
-              <div className="text-2xl flex-shrink-0">{patient?.emoji || '❓'}</div>
+              <div className="text-2xl flex-shrink-0">
+                {patient ? patient.emoji || getPatientInitial(patient.name) : '❓'}
+              </div>
               <div className="flex-1 min-w-0">
                 <p className="text-lg font-medium text-gray-900 truncate">
                   {patient?.name || 'مريض محذوف'}

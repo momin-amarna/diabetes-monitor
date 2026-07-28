@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import ModalShell from '../Shared/ModalShell';
+import { getPatientInitial } from '../../lib/utils';
 
 export default function PatientList({ patients, onAdd, onEdit, onDelete, onClose }) {
   const [pendingDelete, setPendingDelete] = useState(null);
@@ -37,7 +38,7 @@ export default function PatientList({ patients, onAdd, onEdit, onDelete, onClose
               className="w-12 h-12 rounded-full flex items-center justify-center text-2xl text-white flex-shrink-0"
               style={{ backgroundColor: patient.color }}
             >
-              {patient.emoji}
+              {patient.emoji || getPatientInitial(patient.name)}
             </div>
             <span className="flex-1 text-lg font-medium text-gray-900 truncate">
               {patient.name}
