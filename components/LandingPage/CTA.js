@@ -6,7 +6,9 @@ export default function CTA() {
       className="px-6 py-16 sm:py-24 text-center text-white"
       style={{ background: 'linear-gradient(135deg, #10b981, #3b82f6)' }}
     >
-      <h2 className="text-2xl sm:text-heading font-bold mb-4">ابدأ متابعة صحة والديك اليوم</h2>
+      <h2 className="text-2xl sm:text-heading font-bold mb-4">
+        ابدأ متابعة صحتك أو صحة من تهتم به اليوم
+      </h2>
       <p className="text-lg sm:text-2xl opacity-90 mb-8 max-w-xl mx-auto">
         مجاني بالكامل، ولا يحتاج إلى أي إعداد معقد
       </p>
