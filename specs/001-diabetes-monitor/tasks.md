@@ -211,7 +211,7 @@ Single Next.js project. All paths relative to repository root (`pages/`, `compon
 ## Phase 11: Polish & Cross-Cutting Concerns
 
 - [ ] T070 [P] Add error handling + user-friendly error messages across all API routes
-- [ ] T071 [P] Verify offline behavior (airplane mode test: add measurement, reconnect, confirm sync)
+- [x] T071 [P] Verify offline behavior (found & fixed: service worker was never registered; verified via simulated offline network that the app shell loads from cache, measurements save locally with a graceful sync-error banner, and saves sync cleanly once back online — Sheets reconnect-sync itself is N/A since that integration isn't implemented yet, see README)
 - [ ] T072 Review all components for RTL correctness and touch target sizes
 - [ ] T073 Code cleanup pass — remove dead code, ensure DRY per constitution
 - [ ] T074 Final manual test pass through all 7 user stories end-to-end
